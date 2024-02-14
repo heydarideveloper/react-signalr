@@ -3,11 +3,7 @@ import {
   HubConnectionBuilder,
   HubConnectionState,
   IHttpConnectionOptions,
-  LogLevel,
 } from "@microsoft/signalr";
-import { useRef } from "react";
-
-const __DEV__ = process.env.NODE_ENV !== "production";
 
 function isConnectionConnecting(connection: HubConnection) {
   return (
@@ -17,23 +13,23 @@ function isConnectionConnecting(connection: HubConnection) {
   );
 }
 
-function usePropRef(prop: any) {
-  const ref = useRef(prop);
-  if (ref.current !== prop) {
-    ref.current = prop;
+function createConnection(
+  url: string,
+  transportType: IHttpConnectionOptions,
+  automaticReconnect = true,
+) {
+  let connectionBuilder = new HubConnectionBuilder().withUrl(
+    url,
+    transportType,
+  );
+
+  if (automaticReconnect) {
+    connectionBuilder = connectionBuilder.withAutomaticReconnect();
   }
 
-  return ref;
-}
-
-function createConnection(url: string, transportType: IHttpConnectionOptions) {
-  let connectionBuilder = new HubConnectionBuilder()
-    .withUrl(url, transportType)
-    .withAutomaticReconnect();
-
-  if (__DEV__) {
+  if (transportType.logger) {
     connectionBuilder = connectionBuilder.configureLogging(
-      LogLevel.Information,
+      transportType.logger,
     );
   }
 
@@ -42,4 +38,4 @@ function createConnection(url: string, transportType: IHttpConnectionOptions) {
   return connection;
 }
 
-export { isConnectionConnecting, usePropRef, createConnection, __DEV__ };
+export { isConnectionConnecting, createConnection };

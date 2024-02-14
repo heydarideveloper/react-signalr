@@ -7,8 +7,8 @@ import { providerNativeFactory } from "./provider/providerNativeFactory";
 
 const SOCEKT_IO_SEND = "SOCEKT_IO_SEND";
 
-function createSocketContext<T extends Hub>(options?: {
-  shareConnectionBetweenTab: boolean;
+function createSocketIoContext<T extends Hub>(options?: {
+  shareConnectionBetweenTab?: boolean;
 }) {
   const events: (keyof T["callbacks"])[] = [];
   const context: Context<T> = {
@@ -16,6 +16,10 @@ function createSocketContext<T extends Hub>(options?: {
     useSocketEffect: null as any, // Assigned after context
     shareConnectionBetweenTab: options?.shareConnectionBetweenTab || false,
     invoke: (methodName: string, ...args: any[]) => {
+      if (!context.shareConnectionBetweenTab) {
+        context.connection?.emit(methodName, ...args);
+        return;
+      }
       sendWithHermes(
         SOCEKT_IO_SEND,
         { methodName, args },
@@ -69,4 +73,4 @@ function createSocketContext<T extends Hub>(options?: {
   return context;
 }
 
-export { createSocketContext };
+export { createSocketIoContext };

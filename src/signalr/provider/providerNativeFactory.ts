@@ -1,20 +1,26 @@
 import { useEffect, useRef, useState } from "react";
+import { useEvent } from "../../utils";
 import { Context, Hub } from "../types";
-import { createConnection, isConnectionConnecting, usePropRef } from "../utils";
+import { createConnection, isConnectionConnecting } from "../utils";
 import { ProviderProps } from "./types";
 
 function providerNativeFactory<T extends Hub>(Context: Context<T>) {
   const Provider = ({
     url,
     connectEnabled = true,
+    automaticReconnect = true,
     children,
     dependencies = [],
     accessTokenFactory,
     onError,
+    onOpen,
+    onClosed,
+    onReconnect,
+    onBeforeClose,
     ...rest
   }: ProviderProps) => {
-    const onErrorRef = usePropRef(onError);
-    const accessTokenFactoryRef = usePropRef(accessTokenFactory);
+    const onErrorRef = useEvent(onError);
+    const accessTokenFactoryRef = useEvent(accessTokenFactory);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const clear = useRef(() => {});
 
@@ -23,23 +29,33 @@ function providerNativeFactory<T extends Hub>(Context: Context<T>) {
         return;
       }
 
-      const connection = createConnection(url, {
-        accessTokenFactory: () => accessTokenFactoryRef.current?.() || "",
-        ...rest,
-      });
-      connection.onreconnecting((error) => onErrorRef.current?.(error));
+      const connection = createConnection(
+        url,
+        {
+          accessTokenFactory: () => accessTokenFactoryRef?.() || "",
+          ...rest,
+        },
+        automaticReconnect,
+      );
+      connection.onreconnecting((error) => onErrorRef?.(error));
+      connection.onreconnected(() => onReconnect?.(connection));
 
       Context.connection = connection;
       //@ts-ignore
       Context.reOn();
 
+      connection.onclose((error) => {
+        onClosed?.(error);
+      });
+
       async function checkForStart() {
         if (!isConnectionConnecting(connection)) {
           try {
             await connection.start();
+            onOpen?.(connection);
           } catch (err) {
             console.log(err);
-            onErrorRef.current?.(err);
+            onErrorRef?.(err as Error);
           }
         }
       }
@@ -48,8 +64,9 @@ function providerNativeFactory<T extends Hub>(Context: Context<T>) {
 
       const checkInterval = setInterval(checkForStart, 6000);
 
-      clear.current = () => {
+      clear.current = async () => {
         clearInterval(checkInterval);
+        await onBeforeClose?.(connection);
         connection.stop();
       };
     }
@@ -72,7 +89,7 @@ function providerNativeFactory<T extends Hub>(Context: Context<T>) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [connectEnabled, url, ...dependencies]);
 
-    return children;
+    return children as JSX.Element;
   };
   return Provider;
 }

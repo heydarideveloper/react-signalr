@@ -1,14 +1,10 @@
 import hermes from "hermes-channel";
 import { useEffect, useRef, useState } from "react";
 import jsCookie from "js-cookie";
-import {
-  createConnection,
-  isConnectionConnecting,
-  usePropRef,
-  __DEV__,
-} from "../utils";
+import { createConnection, isConnectionConnecting } from "../utils";
 import { ProviderProps } from "./types";
 import { Context, Hub } from "../types";
+import { useEvent } from "../../utils";
 
 const IS_SIGNAL_R_CONNECTED = "IS_SIGNAL_R_CONNECTED";
 const KEY_LAST_CONNECTION_TIME = "KEY_LAST_CONNECTION_TIME";
@@ -17,14 +13,20 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
   const Provider = ({
     url,
     connectEnabled = true,
+    automaticReconnect = true,
     children,
     dependencies = [],
     accessTokenFactory,
     onError,
+    onOpen,
+    onReconnect,
+    onClosed,
+    onBeforeClose,
+    logger,
     ...rest
   }: ProviderProps) => {
-    const onErrorRef = usePropRef(onError);
-    const accessTokenFactoryRef = usePropRef(accessTokenFactory);
+    const onErrorRef = useEvent(onError);
+    const accessTokenFactoryRef = useEvent(accessTokenFactory);
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     const clear = useRef(() => {});
 
@@ -33,17 +35,27 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
         return;
       }
 
-      const connection = createConnection(url, {
-        accessTokenFactory: () => accessTokenFactoryRef.current?.() || "",
-        ...rest,
-      });
+      const connection = createConnection(
+        url,
+        {
+          accessTokenFactory: () => accessTokenFactoryRef?.() || "",
+          logger,
+          ...rest,
+        },
+        automaticReconnect,
+      );
 
-      connection.onreconnecting((error) => onErrorRef.current?.(error));
+      connection.onreconnecting((error) => onErrorRef?.(error));
+      connection.onreconnected(() => onReconnect?.(connection));
 
       Context.connection = connection;
 
       //@ts-ignore
       Context.reOn();
+
+      connection.onclose((error) => {
+        onClosed?.(error);
+      });
 
       let lastConnectionSentState: number | null =
         Number(jsCookie.get(KEY_LAST_CONNECTION_TIME)) || null;
@@ -59,8 +71,8 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
 
           return;
         }
-        if (__DEV__) {
-          console.log("_anotherTabConnectionId");
+        if (logger) {
+          console.log("Another tab connected");
         }
         anotherTabConnectionId = _anotherTabConnectionId;
         lastConnectionSentState = Date.now();
@@ -73,6 +85,17 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
       let sentInterval: any;
 
       async function checkForStart() {
+        function syncWithTabs() {
+          if (anotherTabConnectionId) {
+            clearInterval(sentInterval);
+            connection.stop();
+
+            return;
+          }
+
+          shoutConnected(connection.connectionId);
+        }
+
         if (
           (!lastConnectionSentState ||
             lastConnectionSentState < Date.now() - 5000) &&
@@ -81,16 +104,7 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
           try {
             shoutConnected(connection.connectionId);
             await connection.start();
-            function syncWithTabs() {
-              if (anotherTabConnectionId) {
-                clearInterval(sentInterval);
-                connection.stop();
-
-                return;
-              }
-
-              shoutConnected(connection.connectionId);
-            }
+            onOpen?.(connection);
 
             sentInterval = setInterval(syncWithTabs, 4000);
 
@@ -98,7 +112,7 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
           } catch (err) {
             console.log(err);
             sentInterval && clearInterval(sentInterval);
-            onErrorRef.current?.(err);
+            onErrorRef?.(err as Error);
           }
         }
       }
@@ -122,9 +136,11 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
       /** AddEventListener is not exist in react-native */
       window?.addEventListener?.("beforeunload", onBeforeunload);
 
-      clear.current = () => {
+      clear.current = async () => {
         clearInterval(checkInterval);
         sentInterval && clearInterval(sentInterval);
+        await onBeforeClose?.(connection);
+
         connection.stop();
         hermes.off(IS_SIGNAL_R_CONNECTED);
         /** RemoveEventListener is not exist in react-native */
@@ -150,7 +166,7 @@ function providerFactory<T extends Hub>(Context: Context<T>) {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [connectEnabled, url, ...dependencies]);
 
-    return children;
+    return children as JSX.Element;
   };
 
   return Provider;

@@ -1,11 +1,17 @@
 using Example.Hubs.Clients;
 using Example.ViewModel;
+using System;
 using System.Threading.Tasks;
 
 namespace Example.Hubs
 {
     public class ChatHub : AppHubBase<IChatClient> , IHuB
     {
+        public async Task Hello()
+        {
+            await Clients.All.Hello(DateTime.Now.ToString());
+        }
+
         public async Task<string> StartWorkAsync(StartWorkVm message)
         {
             await Clients.All.StartWorkAsync(message);
@@ -22,6 +28,7 @@ namespace Example.Hubs
         {
             await Clients.All.StopWorkAsync(new StopWorkVm());
         }
+
     }
 
     public interface IHuB

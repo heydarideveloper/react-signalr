@@ -9,14 +9,18 @@ import { providerNativeFactory } from "./provider/providerNativeFactory";
 
 const SIGNAL_R_INVOKE = "SIGNAL_R_INVOKE";
 function createSignalRContext<T extends Hub>(options?: {
-  shareConnectionBetweenTab: boolean;
+  shareConnectionBetweenTab?: boolean;
 }) {
   const events: T["callbacksName"][] = [];
   const context: Context<T> = {
     connection: null,
     useSignalREffect: null as any, // Assigned after context
     shareConnectionBetweenTab: options?.shareConnectionBetweenTab || false,
-    invoke: (methodName: string, ...args: any[]) => {
+    invoke(methodName: string, ...args: any[]): Promise<any> | undefined {
+      if (!context.shareConnectionBetweenTab) {
+        return context.connection?.invoke(methodName, ...args);
+      }
+
       const SIGNAL_R_RESPONSE = uuid();
       sendWithHermes(
         SIGNAL_R_INVOKE,

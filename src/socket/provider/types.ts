@@ -1,4 +1,4 @@
-import { DependencyList } from "react";
+import { DependencyList, ReactNode } from "react";
 import { ManagerOptions, SocketOptions } from "socket.io-client";
 
 export interface ProviderProps extends Partial<ManagerOptions & SocketOptions> {
@@ -7,7 +7,7 @@ export interface ProviderProps extends Partial<ManagerOptions & SocketOptions> {
   dependencies?: DependencyList;
   onError?: (error?: Error) => Promise<void>;
   url: string;
-  children: JSX.Element;
+  children: ReactNode | ReactNode[];
   /**
    * A function that provides an access token required for HTTP Bearer authentication.
    *
@@ -15,4 +15,5 @@ export interface ProviderProps extends Partial<ManagerOptions & SocketOptions> {
    *     token, or a Promise that resolves to a string containing the access token.
    */
   accessTokenFactory?(): string | Promise<string>;
+  automaticReconnect?: boolean;
 }

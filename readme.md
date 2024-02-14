@@ -1,13 +1,14 @@
-# react-signalr Is a tools for using signalr socket in react/react-native apps
+# React-Signalr
 
 [![NPM](https://nodei.co/npm/react-signalr.png)](https://nodei.co/npm/react-signalr/)
 
 [![install size](https://packagephobia.now.sh/badge?p=react-signalr)](https://packagephobia.now.sh/result?p=react-signalr) [![dependencies](https://david-dm.org/hosseinmd/react-signalr.svg)](https://david-dm.org/hosseinmd/react-signalr.svg)
 
-## react-signalr
+## React-Signalr Is a tools for using signalR, Socket.io or WebSocket in react/react-native apps
 
-Supported microsoft/signalR version 5 and later
-Supported Socket.io
+- Supported microsoft/signalR version 5 and later
+- Supported Socket.io
+- Supported WebSocket
 
 Features
 
@@ -17,26 +18,28 @@ Features
 
 ## TOC
 
-- [install](#install)
-- [getStart](#getStart)
-- [useSignalREffect](#useSignalREffect)
+- [Install](#install)
+- [Get started SignalR](#signalr)
+- [Get started SocketIO](#socketio)
+- [Get started WebSocket](#websocket)
 
-### install
+## install
 
-`$ yarn add react-signalr`
+`$ yarn add react-signalr @microsoft/signalr socket.io-client`
 
-### getStart
+## Get started
 
-create a signalr context,
+## signalr
+
+First of all you need to create a signalR context. every thing is depend on your context, you could create multiple context.
 
 ```js
-import { createSignalRContext } from "react-signalr";
+import { createSignalRContext } from "react-signalr/signalr";
 
 const SignalRContext = createSignalRContext();
-// or createSocketContext for socket.io
 
 const App = () => {
-  const { token } = StoreAuthentication.useState();
+  const { token } = YourAccessToken;
 
   return (
     <SignalRContext.Provider
@@ -51,7 +54,51 @@ const App = () => {
 };
 ```
 
-### useSignalREffect
+#### useSignalREffect
+
+Use this for connect to an event
+
+```js
+const Comp = () => {
+  const [messages, setMessage] = useState([]);
+
+  SignalRContext.useSignalREffect(
+    "event name", // Your Event Key
+    (message) => {
+      setMessage([...messages, message]);
+    },
+  );
+
+  return <Components />;
+};
+```
+
+## socketio
+
+create a socketIO context,
+
+```js
+import { createSocketIoContext } from "react-signalr/socketio";
+
+const SocketIOContext = createSocketIoContext();
+
+const App = () => {
+  const { token } = YourAccessToken;
+
+  return (
+    <SocketIOContext.Provider
+      connectEnabled={!!token}
+      accessTokenFactory={() => token}
+      dependencies={[token]} //remove previous connection and create a new connection if changed
+      url={"https://example/hub"}
+    >
+      <Routes />
+    </SocketIOContext.Provider>
+  );
+};
+```
+
+#### useSignalREffect
 
 Use this to connect to an event
 
@@ -59,14 +106,66 @@ Use this to connect to an event
 const Comp = () => {
   const [messages, setMessage] = useState([]);
 
-  useSignalREffect(
-    "message",
+  SocketIOContext.useSocketEffect(
+    "event name", // Your Event Key
     (message) => {
       setMessage([...messages, message]);
     },
-    [messages],
   );
 
-  return null;
+  return <Components />;
 };
 ```
+
+## websocket
+
+create a websocket context,
+
+```js
+import { createWebSocketContext } from "react-signalr/websocket";
+
+const WebsocketContext = createWebSocketContext();
+
+const App = () => {
+  const { token } = YourAccessToken;
+
+  return (
+    <WebsocketContext.Provider
+      connectEnabled={!!token}
+      dependencies={[token]} //remove previous connection and create a new connection if changed
+      url={"https://example/hub"}
+    >
+      <Routes />
+    </WebsocketContext.Provider>
+  );
+};
+```
+
+#### useWebSocketEffect
+
+Use this for connect to an event in you component
+
+```js
+const Comp = () => {
+  const [messages, setMessage] = useState([]);
+
+  WebsocketContext.useWebSocketEffect(
+    (message) => {
+      setMessage([...messages, message]);
+    },
+  );
+
+  return <Components />;
+};
+```
+
+### supports
+
+| react-signalr  | @microsoft/signalr |
+| -------------- | ------------------ |
+| 0.2.0 - 0.2.18 | 7.x                |
+| 0.2.19         | 7.x - 8.x          |
+
+### React-Native
+
+Full supported
