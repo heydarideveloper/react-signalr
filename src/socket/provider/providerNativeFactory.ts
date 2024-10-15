@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useEvent } from "../../utils";
 import { Context, Hub } from "../types";
 import { createConnection, isConnectionConnecting } from "../utils";
 import { ProviderProps } from "./types";
