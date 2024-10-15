@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Context, Hub } from "../types";
 import { createConnection, isConnectionConnecting } from "../utils";
 import { ProviderProps } from "./types";
+import { useEvent } from "../../utils";
 
 function providerNativeFactory<T extends Hub>(Context: Context<T>) {
   const Provider = ({
