@@ -149,11 +149,9 @@ Use this for connect to an event in you component
 const Comp = () => {
   const [messages, setMessage] = useState([]);
 
-  WebsocketContext.useWebSocketEffect(
-    (message) => {
-      setMessage([...messages, message]);
-    },
-  );
+  WebsocketContext.useWebSocketEffect((message) => {
+    setMessage([...messages, message]);
+  });
 
   return <Components />;
 };

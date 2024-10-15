@@ -4,63 +4,55 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [0.2.24](https://github.com/hosseinmd/react-signalr/compare/v0.2.23...v0.2.24) (2024-09-28)
 
-
 ### Bug Fixes
 
-* remove useless random-value package ([e5f3803](https://github.com/hosseinmd/react-signalr/commit/e5f38033ba8396d7d8ab2317e3f374c8b0b5383d))
+- remove useless random-value package ([e5f3803](https://github.com/hosseinmd/react-signalr/commit/e5f38033ba8396d7d8ab2317e3f374c8b0b5383d))
 
 ### [0.2.23](https://github.com/hosseinmd/react-signalr/compare/v0.2.22...v0.2.23) (2024-09-11)
 
-
 ### Features
 
-* support react-native headers for websocket ([9048654](https://github.com/hosseinmd/react-signalr/commit/9048654b73f751472083f4c24406ee3e8f07b99a))
+- support react-native headers for websocket ([9048654](https://github.com/hosseinmd/react-signalr/commit/9048654b73f751472083f4c24406ee3e8f07b99a))
 
 ### [0.2.22](https://github.com/hosseinmd/react-signalr/compare/v0.2.21...v0.2.22) (2024-05-26)
 
-
 ### Features
 
-* add retyrDelay to automaticReconnect ([93b43b1](https://github.com/hosseinmd/react-signalr/commit/93b43b1fab2860da85702ed2723d8ec113561015))
+- add retyrDelay to automaticReconnect ([93b43b1](https://github.com/hosseinmd/react-signalr/commit/93b43b1fab2860da85702ed2723d8ec113561015))
 
 ### [0.2.21](https://github.com/hosseinmd/react-signalr/compare/v0.2.20...v0.2.21) (2024-05-26)
 
-
 ### Bug Fixes
 
-* source map missed ([3f360fa](https://github.com/hosseinmd/react-signalr/commit/3f360fa2c4a2972ec0fa8c3787962a465add1b82))
+- source map missed ([3f360fa](https://github.com/hosseinmd/react-signalr/commit/3f360fa2c4a2972ec0fa8c3787962a465add1b82))
 
 ### [0.2.20](https://github.com/hosseinmd/react-signalr/compare/v0.2.19...v0.2.20) (2024-05-26)
 
-
 ### Bug Fixes
 
-* hub type ([24b1ef9](https://github.com/hosseinmd/react-signalr/commit/24b1ef90d4cebfdf3e971422ce0ed2dc95a82e11))
+- hub type ([24b1ef9](https://github.com/hosseinmd/react-signalr/commit/24b1ef90d4cebfdf3e971422ce0ed2dc95a82e11))
 
 ### [0.2.19](https://github.com/hosseinmd/react-signalr/compare/v0.2.18...v0.2.19) (2024-01-29)
 
-
 ### Bug Fixes
 
-* update signalR ([3529250](https://github.com/hosseinmd/react-signalr/commit/35292507abd12ca605ee45b8c11467761e0a8399))
+- update signalR ([3529250](https://github.com/hosseinmd/react-signalr/commit/35292507abd12ca605ee45b8c11467761e0a8399))
 
 ### [0.2.18](https://github.com/hosseinmd/react-signalr/compare/v0.2.17...v0.2.18) (2023-09-08)
 
-
 ### Bug Fixes
 
-* add separate files for each tools ([44a18e5](https://github.com/hosseinmd/react-signalr/commit/44a18e549da5fea5eee644c3609b7669cbaac8e6))
-* example ([5b6029e](https://github.com/hosseinmd/react-signalr/commit/5b6029eedbedd060d497e88a7aab1e0dd0a7cfc4))
-* invoke when share connection is disabled ([dde6bfc](https://github.com/hosseinmd/react-signalr/commit/dde6bfc49a8f7e5dc25eda218b1753ed261cdfed))
-* remove deps of events ([b842ada](https://github.com/hosseinmd/react-signalr/commit/b842ada44b30b42f79116b633ec1e55ab1ce7a53))
-* signalr example ([39cf498](https://github.com/hosseinmd/react-signalr/commit/39cf49845da79f1e164aa5b70459c4a23d3c821f))
+- add separate files for each tools ([44a18e5](https://github.com/hosseinmd/react-signalr/commit/44a18e549da5fea5eee644c3609b7669cbaac8e6))
+- example ([5b6029e](https://github.com/hosseinmd/react-signalr/commit/5b6029eedbedd060d497e88a7aab1e0dd0a7cfc4))
+- invoke when share connection is disabled ([dde6bfc](https://github.com/hosseinmd/react-signalr/commit/dde6bfc49a8f7e5dc25eda218b1753ed261cdfed))
+- remove deps of events ([b842ada](https://github.com/hosseinmd/react-signalr/commit/b842ada44b30b42f79116b633ec1e55ab1ce7a53))
+- signalr example ([39cf498](https://github.com/hosseinmd/react-signalr/commit/39cf49845da79f1e164aa5b70459c4a23d3c821f))
 
 ### [0.2.17](https://github.com/hosseinmd/react-signalr/compare/v0.2.16...v0.2.17) (2023-06-25)
 
-
 ### Features
 
-* add automatic reconnect feature ([#26](https://github.com/hosseinmd/react-signalr/issues/26)) ([4f8d330](https://github.com/hosseinmd/react-signalr/commit/4f8d3307a0c43a91a8f842739f4b062032fa36af))
+- add automatic reconnect feature ([#26](https://github.com/hosseinmd/react-signalr/issues/26)) ([4f8d330](https://github.com/hosseinmd/react-signalr/commit/4f8d3307a0c43a91a8f842739f4b062032fa36af))
 
 ### [0.2.16](https://github.com/hosseinmd/react-signalr/compare/v0.2.11...v0.2.16) (2023-05-20)
 
